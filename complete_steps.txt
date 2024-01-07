@@ -1,0 +1,113 @@
+  #Create a Maven we appn & deploy to tomacat web server.
+  
+  1) Create a web application & add project git Repo (for future purpose)
+  
+  473  mvn archetype:generate -DgroupId=in.ashokit -DartifactId=new_web-app -DarchetypeArtifactId=maven-archetype-webapp -DarchetypeVersion=1.4 -DinteractiveMode=false
+  475  cd new_web-app/
+  476  mvn clean package
+  477  touch .gitignore
+  479  git init
+  480  git status
+  481  git add --a
+  482  git commit -m "File added"
+  483  git status
+  485  git branch -M main
+  486  git branch
+  488  git remote add origin https://github.com/shivajikokare/demo_mvn_webapp_tomcat.git
+  489  git push -u origin main
+  490  git status
+  491  git add index.jsp
+  493  git add --a
+  494  git commit -m "jsp file updated"
+  496  git push
+  
+  --------------
+  2) Deploying project on web server (Tomcat Apache):
+  
+  Note: We just needed updated "war" file from project. No matter where project reside (either local m/c or Repo)
+  
+
+    3  java -version
+    4  sudo yum install java
+	5  sudo yum install git
+   38  sudo yum install maven
+    6  wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.84/bin/apache-tomcat-9.0.84.tar.gz
+    9  tar -xvf apache-tomcat-9.0.84.tar.gz
+   14  ls -l apache-tomcat-9.0.84
+   16  cd apache-tomcat-9.0.84/
+
+   18  cd ec2-user/
+   32  git clone https://github.com/ashokitschool/java_maven_app.git
+   34  cd java_maven_app/
+   37  mvn clean package
+
+   72  cp /home/ec2-user/maven_app/target/app.war /home/ec2-user/apache-tomcat-9.0.84/webapps/app1.war
+   74  cd apache-tomcat-9.0.84/
+   89  cd bin/
+   91  sh startup.sh
+   92  sh shutdown.sh
+   93  cd ..
+   98  cd conf/
+
+==========================
+  
+Add tomact users in "<tomact-folder>/conf/tomact-users.xml" file like below 
+
+ 100  vi tomcat-users.xml          ----------- Add permiossions
+
+<role rolename="manager-gui" />
+<role rolename="manager-script" />
+<role rolename="admin-gui" />
+
+<user username="tomcat" password="tomcat" roles="manager-gui" />
+<user username="admin" password="admin" roles="manager-gui,admin-gui,manager-script"/>
+
+-> Stop the tomact server and start it
+
+==========================
+
+  107  cd bin/
+  108  sh shutdown.sh
+  109  cd ..
+
+  112  cd conf/
+
+  114  vi tomcat-users.xml            ------ you can change port number (8080:default for tomcat server)
+  119  cd bin/
+  120  sh startup.sh
+
+  122  cd ..
+  ============================================================
+  Tomcat Admin Console Access
+==============================
+
+=> By default the Host Manager is only accessible from a browser running on the same machine as Tomcat. If you wish to modify this restriction, you'll need to edit the Host Manager's context.xml file.
+
+=> File Location : <tomcat-folder>/webapps/manager/META-INF/context.xml
+
+=> In Manager context.xml file, change <Valve> section like below (allow attribute value changed)
+
+<Context antiResourceLocking="false" privileged="true" >
+     <Valve className="org.apache.catalina.valves.RemoteAddrValve" allow=".*" />
+</Context>
+
+
+  123  cd webapps/manager/META-INF/
+  125  vi context.xml
+  126  cd ..
+  127  cd bin/
+  128  sh shutdown.sh
+ 
+   34  cd java_maven_app/
+   37  mvn clean package
+
+   72  cp /home/ec2-user/maven_app/target/app.war /home/ec2-user/apache-tomcat-9.0.84/webapps/app1.war
+   74  cd apache-tomcat-9.0.84/
+   89  cd bin/
+   91  sh startup.sh
+ 
+ ------
+ Finally: Run applcation on web server  ----> 
+ Linux_m/c_ip_address:port/war_file
+ 
+ 
